@@ -3,15 +3,15 @@ grammar implicia;
 implicia : term ;
 
 term
-    : function args tok_lcurly term tok_rcurly
-    | id tok_lpar terms tok_rpar
-    | id
-    | const
+    : TkFunction args TkLCurly term TkRCurly
+    | TkId TkLPar terms TkRPar
+    | TkId
+    | constant
     ;
 
 args
-    : id ',' type args
-    | id ',' type
+    : TkId ',' type args
+    | TkId ',' type
     ;
 
 terms
@@ -19,14 +19,14 @@ terms
     | term
     ;
 
-const
-    : number
-    | plus
+constant
+    : TkNumber
+    | TkPlus
     ;
 
 type
-    : int
-    | tok_lpar types tok_rpar type
+    : TkInt
+    | TkLPar types TkRPar type
     ;
 
 types
@@ -34,12 +34,13 @@ types
     | type
     ;
 
-plus : 'plus' ;
-int : 'int' ;
-function : 'function' ;
-tok_lpar : '(' ;
-tok_rpar : ')' ;
-tok_lcurly : '{' ;
-tok_rcurly : '}' ;
-id : ('a'..'z')+ ;
-number : ('0'..'9') + ('.' ('0'..'9') +)? ;
+// Lexer rules must start with a capital letter.
+TkPlus : 'plus' ;
+TkInt : 'int' ;
+TkFunction : 'function' ;
+TkLPar : '(' ;
+TkRPar : ')' ;
+TkLCurly : '{' ;
+TkRCurly : '}' ;
+TkId : ('a'..'z')+ ;
+TkNumber : ('0'..'9') + ('.' ('0'..'9') +)? ;
