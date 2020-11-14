@@ -1,6 +1,6 @@
 package net.alexjeffery.implicia.syntax;
 
-public abstract class Type {
+public abstract class Type extends Term {
     public static class Function extends Type {
         private Type[] arguments;
     }

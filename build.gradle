@@ -22,4 +22,5 @@ dependencies {
 
 generateGrammarSource {
     arguments += ['-package', 'net.alexjeffery.implicia.parser']
+    arguments += ['-visitor' ]
 }
