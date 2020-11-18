@@ -1,8 +1,15 @@
 package net.alexjeffery.implicia.syntax;
 
+import net.alexjeffery.implicia.parser.Location;
+import org.antlr.v4.runtime.misc.NotNull;
+import org.antlr.v4.runtime.misc.Nullable;
+
 import java.math.BigDecimal;
 
 public class Term {
+
+    @Nullable
+    private Location location;
 
     public static class Constant extends Term {
         public static class Int extends Constant {
@@ -17,20 +24,15 @@ public class Term {
             private BigDecimal value;
         }
 
-        public static class List extends Constant {
-        }
+        public static class List extends Constant { }
 
-        public static class Concat extends Constant {
-        }
+        public static class Concat extends Constant { }
 
-        public static class Append extends Constant {
-        }
+        public static class Append extends Constant { }
 
-        public static class Add extends Constant {
-        }
+        public static class Add extends Constant { }
 
-        public static class Sub extends Constant {
-        }
+        public static class Sub extends Constant { }
     }
 
     public static class Application extends Term {
