@@ -1,38 +1,43 @@
 grammar Implicia;
 
+@parser::header {
+    import net.alexjeffery.implicia.syntax.Term;
+    import net.alexjeffery.implicia.syntax.Type;
+}
+
 implicia : term ;
 
-term
-    : TkFunction argsLabel=args TkLCurly termLabel=term TkRCurly #functionTerm
-    | idLabel=TkId TkLPar termsLabel=terms TkRPar #applicationTerm
-    | idLabel=TkId #variableTerm
-    | constantLabel=constant #constantTerm
+term returns [Term out]
+    : TkFunction args TkLCurly term TkRCurly { $out = new Term.Lambda.Explicit($args.out, $term.out); }
+    | TkId TkLPar terms TkRPar { $out = new Term.Application($terms.out); }
+    | TkId { $out = new Term.Variable($TkId.text); }
+    | constant { $out = $constant.out; }
     ;
 
-args
-    : TkId ':' typeLabel=type ',' argsLabel=args #multipleArgs
-    | TkId ':' typeLabel=type #singleArgs
+args returns [List<Pair<String, Type>> out]
+    : TkId ':' type ',' args { $out = $args.out; $out.add(new Pair($TkId.text, $type.out)); }
+    | TkId ':' type { $out = new ArrayList<>(); $out.add(new Pair($TkId.text, $type.out)); }
     ;
 
-terms
-    : termLabel=term ',' termsLabel=terms #multipleTerms
-    | termLabel=term #singleTerms
+terms returns [List<Term> out]
+    : term ',' terms { $terms.out.add(0, $term.out); $out = $terms.out; }
+    | term { $out = new ArrayList<Term>(); $out.add($term.out); }
     ;
 
-constant
-    : numberLabel=TkNumber #numberConstant
-    | TkPlus #plusConstant
+constant returns [Term out]
+    : TkNumber { $out = new Term.Constant.Int(Integer.parseInt($TkNumber.text)); }
+    | TkPlus { $out = new Term.Constant.Add(); }
     ;
 
-type
-    : TkInt #intType
-    | TkNumeric #numericType
-    | TkLPar typesLabel=types TkRPar typeLabel=type #functionType
+type returns [Type out]
+    : TkInt { $out = Type.Int.INSTANCE; }
+    | TkNumeric { $out = Type.Numeric.INSTANCE; }
+    | TkLPar types TkRPar type { $out = new Type.Function($types.out, $type.out); }
     ;
 
-types
-    : typeLabel=type ',' typesLabel=types #multipleTypes
-    | typeLabel=type #singleTypes
+types returns [List<Type> out]
+    : type ',' types { $types.out.add(0, $type.out); $out = $types.out; }
+    | type { $out = new ArrayList<Type>(); $out.add($type.out); }
     ;
 
 // Lexer rules must start with a capital letter.
