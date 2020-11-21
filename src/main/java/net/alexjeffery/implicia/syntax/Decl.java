@@ -8,9 +8,9 @@ import java.util.List;
 public class Decl extends Ast {
     public static class Alias extends Decl {
         @NotNull
-        private String ident;
+        public String ident;
         @NotNull
-        private Type type;
+        public Type type;
         public Alias(@NotNull String ident, @NotNull Type type) {
             this.ident = ident;
             this.type = type;
@@ -18,15 +18,15 @@ public class Decl extends Ast {
     }
     public static class Function extends Decl {
         @NotNull
-        private String ident;
+        public String name;
         @NotNull
-        private List<Pair<String, Type>> args;
+        public List<Pair<String, Type>> args;
         @NotNull
-        private Type returnType;
+        public Type returnType;
         @NotNull
-        private Expr body;
-        public Function(@NotNull String ident, @NotNull List<Pair<String, Type>> args, @NotNull Type returnType, @NotNull Expr body) {
-            this.ident = ident;
+        public Expr body;
+        public Function(@NotNull String name, @NotNull List<Pair<String, Type>> args, @NotNull Type returnType, @NotNull Expr body) {
+            this.name = name;
             this.args = args;
             this.returnType = returnType;
             this.body = body;
