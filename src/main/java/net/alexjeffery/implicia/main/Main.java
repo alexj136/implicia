@@ -2,9 +2,9 @@ package net.alexjeffery.implicia.main;
 
 import net.alexjeffery.implicia.parser.ImpliciaLexer;
 import net.alexjeffery.implicia.parser.ImpliciaParser;
+import net.alexjeffery.implicia.syntax.Decl;
 import org.antlr.v4.runtime.ANTLRFileStream;
 import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.tree.ParseTree;
 
 import java.io.IOException;
 
@@ -15,7 +15,8 @@ public class Main {
         ImpliciaLexer lexer = new ImpliciaLexer(new ANTLRFileStream(inputFileName));
         CommonTokenStream tokens = new CommonTokenStream(lexer);
         ImpliciaParser parser = new ImpliciaParser(tokens);
-        ParseTree tree = parser.implicia();
+        Decl decl = parser.decl().out;
+        System.out.println(decl);
     }
 
 }

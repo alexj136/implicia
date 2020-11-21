@@ -1,38 +1,49 @@
 grammar Implicia;
 
 @parser::header {
-    import net.alexjeffery.implicia.syntax.Term;
+    import net.alexjeffery.implicia.syntax.Decl;
+    import net.alexjeffery.implicia.syntax.Expr;
     import net.alexjeffery.implicia.syntax.Type;
 }
 
-implicia : term ;
+decls returns [List<Decl> out]
+    : decl decls { $out = $decls.out; $out.add(0, $decl.out); }
+    | decl { $out = new ArrayList<>(); $out.add($decl.out); }
+    ;
 
-term returns [Term out]
-    : TkFunction args TkLCurly term TkRCurly { $out = new Term.Lambda.Explicit($args.out, $term.out); }
-    | TkId TkLPar terms TkRPar { $out = new Term.Application($terms.out); }
-    | TkId { $out = new Term.Variable($TkId.text); }
+decl returns [Decl out]
+    : KwAlias Ident '=' type { $out = new Decl.Alias($Ident.text, $type.out); }
+    | KwFunction Ident '(' args ')' type '=' expr { $out = new Decl.Function($Ident.text, $args.out, $type.out, $expr.out); }
+    ;
+
+expr returns [Expr out]
+    : '{' args '->' expr '}' { $out = new Expr.Lambda($args.out, $expr.out); }
+    | '{' args '->' expr '}' '(' exprs ')' { $out = new Expr.Apply(new Expr.Lambda($args.out, $expr.out), $exprs.out); }
+    | Ident '(' exprs ')' { $out = new Expr.Call($Ident.text, $exprs.out); }
+    | Ident { $out = new Expr.Variable($Ident.text); }
     | constant { $out = $constant.out; }
+    | '(' expr ')' { $out = $expr.out; }
     ;
 
 args returns [List<Pair<String, Type>> out]
-    : TkId ':' type ',' args { $out = $args.out; $out.add(new Pair($TkId.text, $type.out)); }
-    | TkId ':' type { $out = new ArrayList<>(); $out.add(new Pair($TkId.text, $type.out)); }
+    : Ident ':' type ',' args { $out = $args.out; $out.add(new Pair($Ident.text, $type.out)); }
+    | Ident ':' type { $out = new ArrayList<>(); $out.add(new Pair($Ident.text, $type.out)); }
     ;
 
-terms returns [List<Term> out]
-    : term ',' terms { $terms.out.add(0, $term.out); $out = $terms.out; }
-    | term { $out = new ArrayList<Term>(); $out.add($term.out); }
+exprs returns [List<Expr> out]
+    : expr ',' exprs { $exprs.out.add(0, $expr.out); $out = $exprs.out; }
+    | expr { $out = new ArrayList<Expr>(); $out.add($expr.out); }
     ;
 
-constant returns [Term out]
-    : TkNumber { $out = new Term.Constant.Int(Integer.parseInt($TkNumber.text)); }
-    | TkPlus { $out = new Term.Constant.Add(); }
+constant returns [Expr out]
+    : Number { $out = new Expr.Constant.Int(Integer.parseInt($Number.text)); }
+    | KwPlus { $out = new Expr.Constant.Add(); }
     ;
 
 type returns [Type out]
-    : TkInt { $out = Type.Int.INSTANCE; }
-    | TkNumeric { $out = Type.Numeric.INSTANCE; }
-    | TkLPar types TkRPar type { $out = new Type.Function($types.out, $type.out); }
+    : KwInt { $out = new Type.Int(); }
+    | KwNumeric { $out = new Type.Numeric(); }
+    | '(' types ')' type { $out = new Type.Function($types.out, $type.out); }
     ;
 
 types returns [List<Type> out]
@@ -41,14 +52,11 @@ types returns [List<Type> out]
     ;
 
 // Lexer rules must start with a capital letter.
-TkPlus : 'plus' ;
-TkInt : 'int' ;
-TkNumeric : 'numeric' ;
-TkFunction : 'function' ;
-TkLPar : '(' ;
-TkRPar : ')' ;
-TkLCurly : '{' ;
-TkRCurly : '}' ;
-TkId : ('a'..'z')+ ;
-TkNumber : ('0'..'9') + ('.' ('0'..'9') +)? ;
+KwPlus : 'plus' ;
+KwInt : 'int' ;
+KwNumeric : 'numeric' ;
+KwFunction : 'function' ;
+KwAlias : 'alias' ;
+Ident : ('a'..'z')+ ;
+Number : ('0'..'9') + ('.' ('0'..'9') +)? ;
 Whitespace : [ \t\r\n]+ -> skip ;

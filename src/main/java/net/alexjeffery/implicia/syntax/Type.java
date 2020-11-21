@@ -3,7 +3,7 @@ package net.alexjeffery.implicia.syntax;
 import org.antlr.v4.runtime.misc.NotNull;
 import java.util.List;
 
-public abstract class Type extends Term {
+public abstract class Type extends Ast {
     public static class Function extends Type {
         @NotNull
         private List<Type> argumentTypes;
@@ -15,18 +15,19 @@ public abstract class Type extends Term {
         }
     }
     public static class Int extends Type {
-        private Int() { }
-        public static final Int INSTANCE = new Int();
+        public Int() { }
     }
     public static class Char extends Type {
-        private Char() { }
-        public static final Char INSTANCE = new Char();
+        public Char() { }
     }
     public static class Numeric extends Type {
-        private Numeric() { }
-        public static final Numeric INSTANCE = new Numeric();
+        public Numeric() { }
     }
     public static class ListT extends Type {
+        @NotNull
         private Type argument;
+        public ListT(@NotNull Type argument) {
+            this.argument = argument;
+        }
     }
 }
