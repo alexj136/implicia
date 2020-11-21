@@ -8,6 +8,17 @@ import java.util.List;
 
 public class Expr extends Ast {
     public static class Constant extends Expr {
+        public static Expr number(String parsedNumber) {
+            return parsedNumber.contains(".")?
+                    new Expr.Constant.Int(Integer.parseInt(parsedNumber)):
+                    new Expr.Constant.Numeric(new BigDecimal(parsedNumber));
+        }
+        public static class Bool extends Constant {
+            private boolean value;
+            public Bool(boolean value) {
+                this.value = value;
+            }
+        }
         public static class Int extends Constant {
             private int value;
             public Int(int value) {
@@ -18,13 +29,56 @@ public class Expr extends Ast {
             private char value;
         }
         public static class Numeric extends Constant {
+            @NotNull
             private BigDecimal value;
+            public Numeric(@NotNull BigDecimal value) {
+                this.value = value;
+            }
         }
-        public static class List extends Constant { }
-        public static class Concat extends Constant { }
-        public static class Append extends Constant { }
-        public static class Add extends Constant { }
-        public static class Sub extends Constant { }
+        public static class ListE extends Constant {
+            @NotNull
+            private List<Expr> elements;
+            public ListE(List<Expr> elements) {
+                this.elements = elements;
+            }
+        }
+    }
+    public static class UnaryOp extends Expr {
+        @NotNull
+        private UnaryOpType type;
+        @NotNull
+        private Expr argument;
+        public UnaryOp(@NotNull UnaryOpType type, @NotNull Expr argument) {
+            this.type = type;
+            this.argument = argument;
+        }
+    }
+    public static enum UnaryOpType {
+        // boolean
+        NOT,
+    }
+    public static class BinOp extends Expr {
+        @NotNull
+        private BinOpType type;
+        @NotNull
+        private Expr left;
+        @NotNull
+        private Expr right;
+        public BinOp(@NotNull BinOpType type, @NotNull Expr left, @NotNull Expr right) {
+            this.type = type;
+            this.left = left;
+            this.right = right;
+        }
+    }
+    public static enum BinOpType {
+        // arithmetic
+        ADD, SUBTRACT, MULTIPLY, DIVIDE, MODULO, POWER,
+        // comparison
+        LT, GT, LE, GE, EQ, NE,
+        // boolean
+        AND, OR,
+        // lists
+        INDEX, CONCAT
     }
     public static class Call extends Expr {
         @NotNull

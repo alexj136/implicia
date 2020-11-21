@@ -17,6 +17,9 @@ public abstract class Type extends Ast {
     public static class Int extends Type {
         public Int() { }
     }
+    public static class Bool extends Type {
+        public Bool() { }
+    }
     public static class Char extends Type {
         public Char() { }
     }
@@ -28,6 +31,20 @@ public abstract class Type extends Ast {
         private Type argument;
         public ListT(@NotNull Type argument) {
             this.argument = argument;
+        }
+    }
+    public static class Tuple extends Type {
+        @NotNull
+        private List<Type> elements;
+        public Tuple(@NotNull List<Type> elements) {
+            this.elements = elements;
+        }
+    }
+    public static class Sum extends Type {
+        @NotNull
+        private List<Type> options;
+        public Sum(@NotNull List<Type> options) {
+            this.options = options;
         }
     }
 }
