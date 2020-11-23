@@ -1,11 +1,16 @@
 package net.alexjeffery.implicia.syntax;
 
+import net.alexjeffery.implicia.syntax.visitor.AstVisitor;
 import org.antlr.v4.runtime.misc.NotNull;
+import org.antlr.v4.runtime.misc.Nullable;
 import org.antlr.v4.runtime.misc.Pair;
 
 import java.util.List;
 
 public class Decl extends Ast {
+    public <I, O, X extends Throwable> O visit(@NotNull AstVisitor<I, O, X> visitor, @Nullable I input) throws X {
+        return visitor.applyTo(this, input);
+    }
     public static class Alias extends Decl {
         @NotNull
         public String ident;
