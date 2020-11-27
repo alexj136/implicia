@@ -2,7 +2,7 @@ package net.alexjeffery.implicia.main;
 
 import net.alexjeffery.implicia.parser.ImpliciaLexer;
 import net.alexjeffery.implicia.parser.ImpliciaParser;
-import net.alexjeffery.implicia.syntax.AstPrinterVisitor;
+import net.alexjeffery.implicia.syntax.AstStringifierVisitor;
 import net.alexjeffery.implicia.syntax.Decl;
 import org.antlr.v4.runtime.ANTLRFileStream;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -17,9 +17,8 @@ public class Main {
         CommonTokenStream tokens = new CommonTokenStream(lexer);
         ImpliciaParser parser = new ImpliciaParser(tokens);
         Decl decl = parser.decl().out;
-        AstPrinterVisitor printerVisitor = new AstPrinterVisitor();
-        printerVisitor.applyTo(decl, null);
-        System.out.println(printerVisitor.getAndReset());
+        AstStringifierVisitor stringifierVisitor = new AstStringifierVisitor();
+        stringifierVisitor.applyTo(decl, null);
     }
 
 }
